@@ -1,0 +1,22 @@
+
+{
+    "name": "concrete5/doctrine-xml",
+    "description": "Define database structure via XML using Doctrine data types",
+    "keywords": [
+        "doctrine",
+        "xml",
+        "structure",
+        "database",
+        "schema"
+    ],
+    "homepage": "https://github.com/concrete5/doctrine-xml",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "DoctrineXml\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.3"
+    }
+}

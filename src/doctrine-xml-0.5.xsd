@@ -43,6 +43,13 @@
 				</restriction>
 			</simpleType>
 		</attribute>
+		<attribute name="comment" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<maxLength value="60" />
+				</restriction>
+			</simpleType>
+		</attribute>
 	</complexType>
 
 	<!-- Element type: /schema/table/field -->
@@ -60,6 +67,13 @@
 		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
 		<attribute name="type" type="tns:fieldTypeType" use="required" />
 		<attribute name="size" type="tns:fieldSizeType" use="optional" />
+		<attribute name="comment" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<maxLength value="255" />
+				</restriction>
+			</simpleType>
+		</attribute>
 	</complexType>
 
 	<!-- Element type: /schema/table/field@type -->

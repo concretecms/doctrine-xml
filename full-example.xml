@@ -4,13 +4,13 @@
 	xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5 http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
 >
 
-  <table name="Companies" engine="INNODB">
-    <field name="Id" type="integer">
+  <table name="Companies" engine="INNODB" comment="List of companies">
+    <field name="Id" type="integer" comment="Record identifier">
     	<unsigned />
     	<autoincrement />
     	<key />
     </field>
-    <field name="Name" type="string" size="50">
+    <field name="Name" type="string" size="50" comment="Company name">
     	<notnull />
     </field>
   </table>

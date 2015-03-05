@@ -1,0 +1,24 @@
+body {
+	padding: 20px;
+}
+.xml-editor, #error {
+	height: 300px;
+}
+.xml-editor {
+	position: relative;
+	width: 100%;
+}
+#xml-formatted .ace_cursor-layer {
+	opacity: 0;
+}
+#error {
+	overflow: auto;
+}
+.panel-success #statusCheck {
+	color: green;
+}
+.panel-danger #statusCheck {
+	white-space: pre;
+	font-family: monospace;
+	color: red;
+}

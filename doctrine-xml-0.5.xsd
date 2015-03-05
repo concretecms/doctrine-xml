@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema
+	xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:tns="http://www.concrete5.org/doctrine-xml/0.5"
+	targetNamespace="http://www.concrete5.org/doctrine-xml/0.5"
+	elementFormDefault="qualified"
+>
+
+	<!-- The root element is 'schema' -->
+	<element name="schema" type="tns:schemaType" />
+
+	
+	<!-- An empty element -->
+	<complexType name="emptyElementType" />
+
+	<!-- Name of a database entity (table, field, index, foreign key) -->
+	<simpleType name="databaseEntityNameType">
+		<restriction base="string">
+			<pattern value="[0-9a-zA-Z$_]{1,64}" />
+		</restriction>
+	</simpleType>
+
+	<!-- Element type: /schema -->
+	<complexType name="schemaType">
+		<sequence>
+			<element name="table" type="tns:tableType" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<!-- Element type: /schema/table -->
+	<complexType name="tableType">
+		<sequence>
+			<element name="field" type="tns:fieldType" minOccurs="1" maxOccurs="unbounded"/>
+			<element name="index" type="tns:indexType" minOccurs="0" maxOccurs="unbounded" />
+			<element name="references" type="tns:referencesType" minOccurs="0" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
+	</complexType>
+
+	<!-- Element type: /schema/table/field -->
+	<complexType name="fieldType">
+		<sequence>
+			<element name="unsigned" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="autoincrement" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="key" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<choice minOccurs="0" maxOccurs="1">
+				<element name="default" type="tns:fieldDefaultType" minOccurs="0" maxOccurs="1" />
+				<element name="deftimestamp" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			</choice>
+		</sequence>
+		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
+		<attribute name="type" type="tns:fieldTypeType" use="required" />
+		<attribute name="size" type="tns:fieldSizeType" use="optional" />
+	</complexType>
+
+	<!-- Element type: /schema/table/field@type -->
+	<simpleType name="fieldTypeType">
+		<restriction base="string">
+			<enumeration value="smallint" />
+			<enumeration value="integer" />
+			<enumeration value="bigint" />
+			<enumeration value="decimal" />
+			<enumeration value="float" />
+			<enumeration value="string" />
+			<enumeration value="text" />
+			<enumeration value="guid" />
+			<enumeration value="binary" />
+			<enumeration value="blob" />
+			<enumeration value="boolean" />
+			<enumeration value="date" />
+			<enumeration value="datetime" />
+			<enumeration value="datetimetz" />
+			<enumeration value="time" />
+			<enumeration value="array" />
+			<enumeration value="json_array" />
+			<enumeration value="object" />
+		</restriction>
+	</simpleType>
+
+	<!-- Element type: /schema/table/field@size -->
+	<simpleType name="fieldSizeType">
+		<restriction base="string">
+			<pattern value="[1-9][0-9]*(\.[0-9]+)?" />
+		</restriction>
+	</simpleType>
+
+	<!-- Element type: /schema/table/field/default -->
+	<complexType name="fieldDefaultType">
+		<attribute name="value" use="required">
+			<simpleType>
+				<restriction base="string">
+					<minLength value="1" />
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<!-- Element type: /schema/table/index -->
+	<complexType name="indexType">
+		<sequence>
+			<element name="unique" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="fulltext" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="col" type="tns:databaseEntityNameType" minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+	</complexType>
+
+	<!-- Element type: /schema/table/references -->
+	<complexType name="referencesType">
+		<sequence>
+			<element name="column" type="tns:foreingColumnType" minOccurs="1" maxOccurs="unbounded" />
+		</sequence>
+		<attribute name="name" type="tns:databaseEntityNameType" use="optional" />
+		<attribute name="table" type="tns:databaseEntityNameType" use="required" />
+		<attribute name="onupdate" type="tns:foreingDepenencyActionType" use="optional" default="restrict" />
+		<attribute name="ondelete" type="tns:foreingDepenencyActionType" use="optional" default="restrict" />
+	</complexType>
+
+	<!-- Values of /schema/table/references@onupdate and /schema/table/references@ondelete -->
+	<simpleType name="foreingDepenencyActionType">
+		<restriction base="string">
+			<enumeration value="restrict" />
+			<enumeration value="cascade" />
+			<enumeration value="set null" />
+			<enumeration value="no action" />
+		</restriction>
+	</simpleType>
+
+	<!-- Element type: /schema/table/references/column -->
+	<complexType name="foreingColumnType">
+		<attribute name="local" type="tns:databaseEntityNameType" use="required" />
+		<attribute name="foreign" type="tns:databaseEntityNameType" use="required" />
+	</complexType>
+
+</schema>

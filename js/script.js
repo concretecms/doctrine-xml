@@ -1,6 +1,9 @@
 $(document).ready(function() {
 'use strict';
 
+
+ace.config.set('basePath', window.location.pathname.replace(/\/+$/, '') + '/js');
+
 function createEditor(id) {
   var editor = ace.edit(id);
   editor.getSession().setMode('ace/mode/xml');

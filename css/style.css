@@ -18,7 +18,7 @@ body {
 	color: green;
 }
 .panel-danger #statusCheck {
-	white-space: pre;
+	white-space: pre-wrap;
 	font-family: monospace;
 	color: red;
 }

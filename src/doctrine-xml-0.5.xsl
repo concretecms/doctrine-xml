@@ -56,13 +56,14 @@
 						<xsl:sort select="translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" data-type="text" order="ascending" />
 					</xsl:apply-templates> 
 				</xsl:when>
-				<!-- Sort children of field (autoincrement, key, default|deftimestamp, unsigned) -->
+				<!-- Sort children of field (autoincrement, key, default|deftimestamp, unsigned, notnull) -->
 				<xsl:when test="$lowerCaseElementName = 'field'">
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'unsigned']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'autoincrement']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'key']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'default']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'deftimestamp']" />
+					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'notnull']" />
 				</xsl:when>
 				<!-- Sort children of index (unique, fulltext, col) -->
 				<xsl:when test="$lowerCaseElementName = 'index'">

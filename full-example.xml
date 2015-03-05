@@ -11,6 +11,7 @@
     	<key />
     </field>
     <field name="Name" type="string" size="50">
+    	<notnull />
     </field>
   </table>
 
@@ -20,13 +21,16 @@
     	<autoincrement />
     	<key />
     </field>
-    <field name="IdentificationCode" type="string" size="20"></field>
+    <field name="IdentificationCode" type="string" size="20">
+    </field>
     <field name="Company" type="integer">
     	<unsigned />
+    	<notnull />
     </field>
     <field name="FirstName" type="string" size="50">
     </field>
     <field name="LastName" type="string" size="50">
+    	<notnull />
     </field>
     <field name="Income" type="decimal" size="10.2">
     	<default value="1000" />

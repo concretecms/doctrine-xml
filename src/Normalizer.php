@@ -5,7 +5,7 @@ use Exception;
 use XSLTProcessor;
 
 /**
- * Normalize and verify axml data.
+ * Normalize and verify doctrine-xml data.
  */
 class Normalizer
 {

@@ -4,7 +4,7 @@ namespace DoctrineXml;
 use Exception;
 
 /**
- * Verify axml data.
+ * Verify doctrine-xml data.
  */
 class Checker
 {

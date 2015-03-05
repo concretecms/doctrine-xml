@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5 http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
 >
 
-  <table name="Companies">
+  <table name="Companies" engine="INNODB">
     <field name="Id" type="integer">
     	<unsigned />
     	<autoincrement />
@@ -14,7 +14,7 @@
     </field>
   </table>
 
-  <table name="Employees">
+  <table name="Employees" engine="INNODB">
     <field name="Id" type="integer">
     	<unsigned />
     	<autoincrement />

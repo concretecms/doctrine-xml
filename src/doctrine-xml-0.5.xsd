@@ -35,6 +35,14 @@
 			<element name="references" type="tns:referencesType" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
+		<attribute name="engine" use="optional">
+			<simpleType>
+				<restriction base="string">
+					<enumeration value="MYISAM" />
+					<enumeration value="INNODB" />
+				</restriction>
+			</simpleType>
+		</attribute>
 	</complexType>
 
 	<!-- Element type: /schema/table/field -->

@@ -27,6 +27,10 @@
       			<!-- Strip the 'xsi:schemaLocation' attribute, if present -->
       			<xsl:when test="$lowerCaseAttributeName = 'xsi:schemalocation'">
       			</xsl:when>
+      			<!-- The 'engine' attribute is only for the table definition: it should be always upper-case -->
+      			<xsl:when test="$lowerCaseAttributeName = 'engine'">
+      				<xsl:attribute name="{$lowerCaseAttributeName}"><xsl:value-of select="translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/></xsl:attribute>
+      			</xsl:when>
       			<!-- The 'type' attribute is only for the field definition: it should be always lower-case -->
       			<xsl:when test="$lowerCaseAttributeName = 'type'">
       				<xsl:attribute name="{$lowerCaseAttributeName}"><xsl:value-of select="translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:attribute>

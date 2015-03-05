@@ -1,4 +1,5 @@
 /.settings/
 /temp/
+/vendor/
 /.project
 /.buildpath

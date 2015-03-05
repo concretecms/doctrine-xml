@@ -9,6 +9,9 @@ http://concrete5.github.io/doctrine-xml/
 
 ## Complete example
 
+Here's an example with all the features offered by Doctrine XML.
+Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation="..."` are not mandatory but may be useful if your XML editor supports autocompletion.
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <schema xmlns="http://www.concrete5.org/doctrine-xml/0.5"

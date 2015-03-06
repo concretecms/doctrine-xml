@@ -110,8 +110,10 @@
 	<!-- Element type: /schema/table/index -->
 	<complexType name="indexType">
 		<sequence>
-			<element name="unique" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
-			<element name="fulltext" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<choice minOccurs="0" maxOccurs="1">
+				<element name="unique" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+				<element name="fulltext" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			</choice>
 			<element name="col" type="tns:databaseEntityNameType" minOccurs="1" maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="tns:databaseEntityNameType" use="optional" />

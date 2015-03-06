@@ -15,7 +15,6 @@ function createEditor(id) {
   var editor = ace.edit(id);
   editor.getSession().setMode('ace/mode/xml');
   editor.setOptions({
-    showGutter: false,
     showPrintMargin: false,
     highlightActiveLine: false
   });

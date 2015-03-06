@@ -93,7 +93,7 @@
 			<enumeration value="boolean" />
 			<enumeration value="date" />
 			<enumeration value="datetime" />
-			<enumeration value="datetimetz" />
+			<!-- <enumeration value="datetimetz" /> -->
 			<enumeration value="time" />
 			<enumeration value="array" />
 			<enumeration value="json_array" />

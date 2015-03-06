@@ -15,7 +15,7 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-7">
     	<div class="panel panel-default">
     		<div class="panel-heading">Input XML</div>
 			<div class="panel-body">
@@ -23,22 +23,35 @@
 			</div>
 		</div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-5">
+    	<div class="panel panel-success">
+    		<div class="panel-heading">Input analysis</div>
+			<div class="panel-body">
+				<div class="check" id="check-source"></div>
+			</div>
+		</div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-7">
     	<div class="panel panel-default">
-    		<div class="panel-heading">Result</div>
+    		<div class="panel-heading">
+    			Normalized XML
+    			<a href="javascript:void(0)" class="pull-right" id="selectall-formatted">Select all</a>
+    			<a href="javascript:void(0)" class="pull-right" id="copy-formatted">Copy</a>
+    			<span class="pull-right" id="copy-formatted-done"><span class="glyphicon glyphicon-ok"></span></span>
+    		</div>
 			<div class="panel-body">
 				<div class="xml-editor" id="xml-formatted"></div>
 				
 			</div>
 		</div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-5">
     	<div class="panel panel-success">
-    		<div class="panel-heading">Check results</div>
+    		<div class="panel-heading">Normalized analysis</div>
 			<div class="panel-body">
-				<div id="statusCheck"></div>
+				<div class="check" id="check-formatted"></div>
 			</div>
 		</div>
     </div>
@@ -47,5 +60,6 @@
 </body>
 <script src="js/jquery-1.11.2.js"></script>
 <script src="js/ace-1.1.8.js"></script>
+<script src="js/ZeroClipboard-2.2.0.js"></script>
 <script src="js/script.js"></script>
 </html>

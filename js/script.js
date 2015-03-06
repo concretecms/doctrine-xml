@@ -1,6 +1,13 @@
+(function() {
+'use strict';
+ZeroClipboard.config({
+  swfPath: window.location.pathname.replace(/\/+$/, '') + '/js/ZeroClipboard-2.2.0.swf'
+});
+
+})();
+
 $(document).ready(function() {
 'use strict';
-
 
 ace.config.set('basePath', window.location.pathname.replace(/\/+$/, '') + '/js');
 
@@ -194,7 +201,6 @@ var XSD = (function() {
     }
   }
   function ieCheck(xml) {
-    //var xmldoc = new ActiveXObject('Msxml2.FreeThreadedDOMDocument.6.0');
     var xmldoc = new ActiveXObject('Msxml2.DOMDocument.6.0');
     xmldoc.async = false;
     xmldoc.validateOnParse = true;
@@ -207,17 +213,33 @@ var XSD = (function() {
   return ext;
 })();
 
-var $statusCheck = $('#statusCheck');
+var $checkSource = $('#check-source');
+var $checkFormatted = $('#check-formatted');
 var update = (function() {
-  var last = null;
+  var lastXml = null;
   return function(force) {
-    var current = sourceEditor.getSession().getValue();
-    if ((!force) && (last === current)) {
+    var currentXml = sourceEditor.getSession().getValue();
+    if ((!force) && (lastXml === currentXml)) {
       return;
     }
-    last = current;
-    $statusCheck.empty();
+    lastXml = currentXml;
+    $checkSource.empty().closest('.panel').removeClass('panel-default panel-danger panel-success');
+    try {
+      if(XSD.ready === false) {
+        throw 'XSD still not loaded';
+      }
+      if (XSD.error !== null) {
+        throw XSD.error;
+      }
+      XSD.check(currentXml);
+      $checkSource.text('Good!').closest('.panel').addClass('panel-success');
+    } catch(e) {
+      $checkSource.text(e).closest('.panel').addClass('panel-danger');
+    }
+    
+    $checkFormatted.empty().closest('.panel').removeClass('panel-default panel-danger panel-success');
     formattedEditor.getSession().setValue('');
+    var transformedXml = '';
     try {
       if(XSLT.ready === false) {
         throw 'XSLT still not loaded';
@@ -225,7 +247,7 @@ var update = (function() {
       if (XSLT.error !== null) {
         throw XSLT.error;
       }
-      var transformedXml = XSLT.process(current);
+      transformedXml = XSLT.process(currentXml);
       formattedEditor.getSession().setValue(transformedXml);
       if(XSD.ready === false) {
         throw 'XSD still not loaded';
@@ -234,13 +256,46 @@ var update = (function() {
         throw XSD.error;
       }
       XSD.check(transformedXml);
-      $statusCheck.text('None.').closest('.panel').removeClass('panel-danger').addClass('panel-success');
+      $checkFormatted.text('Good!').closest('.panel').addClass('panel-success');
     }
     catch(e) {
-      $statusCheck.text(e).closest('.panel').removeClass('panel-success').addClass('panel-danger');
+      if (transformedXml === '') {
+        $checkFormatted.closest('.panel').addClass('panel-default');
+      } else {
+        $checkFormatted.text(e).closest('.panel').addClass('panel-danger');
+      }
     }
   };
 })();
+
+$('#selectall-formatted').on('click', function() {
+  formattedEditor.selectAll();
+  formattedEditor.focus();
+})
+var copyFormatted = new ZeroClipboard($('#copy-formatted'));
+copyFormatted.on('ready', function(event) {
+  $('#selectall-formatted').hide();
+  $('#copy-formatted').show();
+});
+copyFormatted.on('copy', function(event) {
+  var formattedXml = formattedEditor.getSession().getValue();
+  event.clipboardData.setData('text/plain', formattedXml);
+  event.clipboardData.setData('text/xml', formattedXml);
+});
+copyFormatted.on('aftercopy', function() {
+  var delay = {'in': 100, stay: 1000, out: 100};
+  $('#copy-formatted-done').show(
+    delay['in'],
+    function() {
+      setTimeout(
+        function() {
+          $('#copy-formatted-done').hide(delay.out);
+        },
+        delay.stay
+      );
+    }
+  );
+});
 
 update();
 

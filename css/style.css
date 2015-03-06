@@ -1,7 +1,7 @@
 body {
 	padding: 20px;
 }
-.xml-editor, #error {
+.xml-editor, .check {
 	height: 300px;
 }
 .xml-editor {
@@ -14,11 +14,19 @@ body {
 #error {
 	overflow: auto;
 }
-.panel-success #statusCheck {
+.panel-success .check {
 	color: green;
 }
-.panel-danger #statusCheck {
+.panel-danger .check {
 	white-space: pre-wrap;
 	font-family: monospace;
 	color: red;
+}
+#copy-formatted {
+	display: none;
+}
+#copy-formatted-done {
+	color: green;
+	display: none;
+	padding-right: 10px;
 }

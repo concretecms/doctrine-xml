@@ -66,7 +66,9 @@ EOT;
       <autoincrement />
       <key />
     </field>
-    <field name="IdentificationCode" type="string" size="20" />
+    <field name="IdentificationCode" type="string" size="20">
+        <fixed />
+    </field>
     <field name="Company" type="integer">
       <unsigned />
       <notnull />
@@ -102,7 +104,7 @@ EOT
         ;
         $expectedSQL = array(
             "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB COMMENT = 'List of companies'",
-            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode VARCHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB",
+            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB",
             "ALTER TABLE Employees ADD CONSTRAINT FK_... FOREIGN KEY (Company) REFERENCES Companies (Id) ON UPDATE CASCADE ON DELETE RESTRICT",
         );
 

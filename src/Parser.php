@@ -129,6 +129,7 @@ class Parser
         } else {
             $field->setNotnull(false);
         }
+        $field->setFixed(isset($xField->fixed));
         $size = (string) $xField['size'];
         if ($size !== '') {
             switch ((string) $xField['type']) {

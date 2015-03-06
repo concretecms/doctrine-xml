@@ -37,7 +37,9 @@ Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation=".
       <autoincrement />
       <key />
     </field>
-    <field name="IdentificationCode" type="string" size="20" />
+    <field name="IdentificationCode" type="string" size="20">
+    	<fixed />
+    </field>
     <field name="Company" type="integer">
       <unsigned />
       <notnull />

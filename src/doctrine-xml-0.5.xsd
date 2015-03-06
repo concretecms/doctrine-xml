@@ -63,6 +63,7 @@
 				<element name="deftimestamp" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
 			</choice>
 			<element name="notnull" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="fixed" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
 		</sequence>
 		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
 		<attribute name="type" type="tns:fieldTypeType" use="required" />

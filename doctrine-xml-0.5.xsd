@@ -95,6 +95,7 @@
 			<enumeration value="datetime" />
 			<!-- <enumeration value="datetimetz" /> -->
 			<enumeration value="time" />
+			<enumeration value="timestamp" />
 			<enumeration value="array" />
 			<enumeration value="json_array" />
 			<enumeration value="object" />

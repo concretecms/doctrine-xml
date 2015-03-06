@@ -42,7 +42,10 @@ Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation=".
       <unsigned />
       <notnull />
     </field>
-    <field name="FirstName" type="string" size="50" />
+    <field name="FirstName" type="string" size="50">
+    	<default value="" />
+    	<notnull />
+    </field>
     <field name="LastName" type="string" size="50">
       <notnull />
     </field>
@@ -56,7 +59,7 @@ Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation=".
       <fulltext />
       <col>FirstName</col>
     </index>
-    <index>
+    <index name="IX_EmployeesIdentificationCode">
       <unique />
       <col>IdentificationCode</col>
     </index>

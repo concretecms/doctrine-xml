@@ -13,8 +13,8 @@ class Tests extends PHPUnit_Framework_TestCase
         $this->assertNotNull(Checker::checkString($minimumBad));
         $this->assertNull(Checker::checkString($minimumGood));
 
-        $this->assertSame(trim(Normalizer::normalizeString($minimumGood)), $minimumGood);
-        $this->assertSame(trim(Normalizer::normalizeString($minimumBad)), $minimumGood);
+        $this->assertSame($minimumGood, trim(Normalizer::normalizeString($minimumGood)));
+        $this->assertSame($minimumGood, trim(Normalizer::normalizeString($minimumBad)));
 
         $completeBad = <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
@@ -111,11 +111,43 @@ EOT
         $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = $schema->toSql($platform);
-        $this->assertSame(count($generatedSQL), count($expectedSQL));
+        $this->assertSame(count($expectedSQL), count($generatedSQL));
         for ($i = 0; $i < count($expectedSQL); $i++) {
             $fixSQL = trim($generatedSQL[$i]);
             $fixSQL = preg_replace('/ (FK_|IDX_)(\w+) /', ' $1... ', $fixSQL);
-            $this->assertSame($fixSQL, trim($expectedSQL[$i]));
+            $this->assertSame(trim($expectedSQL[$i]), $fixSQL);
         }
+    }
+
+    public function testDefaultDateTime()
+    {
+        $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5">
+  <table name="Test">
+    <field name="Date" type="date">
+        <deftimestamp />
+    </field>
+    <field name="Time" type="time">
+        <deftimestamp />
+    </field>
+    <field name="DateTime" type="datetime">
+        <deftimestamp />
+    </field>
+    <!--<field name="DateTimeTZ" type="datetimetz">
+        <deftimestamp />
+    </field>-->
+  </table>
+</schema>
+EOT
+        ;
+        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $schema = Parser::fromDocument($xml, $platform);
+        $generatedSQL = array_map('trim', $schema->toSql($platform));
+        $this->assertSame(
+            //"CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+            "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+            implode("\n", $generatedSQL)
+        );
     }
 }

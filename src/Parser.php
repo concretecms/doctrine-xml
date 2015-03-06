@@ -122,7 +122,17 @@ class Parser
         if (isset($xField->default)) {
             $field->setDefault((string) $xField->default['value']);
         } elseif (isset($xField->deftimestamp)) {
-            $field->setDefault($platform->getCurrentTimestampSQL());
+            switch ((string) $xField['type']) {
+                case 'date':
+                    $field->setDefault($platform->getCurrentDateSQL());
+                    break;
+                case 'time':
+                    $field->setDefault($platform->getCurrentTimeSQL());
+                    break;
+                default:
+                    $field->setDefault($platform->getCurrentTimestampSQL());
+                    break;
+            }
         }
         if (isset($xField->notnull) || isset($xField->autoincrement) || isset($xField->key)) {
             $field->setNotnull(true);

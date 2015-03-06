@@ -1,6 +1,7 @@
 <?php
 use DoctrineXml\Normalizer;
 use DoctrineXml\Checker;
+use DoctrineXml\Parser;
 
 class Tests extends PHPUnit_Framework_TestCase
 {
@@ -25,11 +26,10 @@ class Tests extends PHPUnit_Framework_TestCase
     </field>
     <index>
         <col>FieldName</col>
-        <FullText />
         <UNIQUE />
     </index>
     <References table="OtherTable" onDelete="Cascade">
-        <COLUMN Local="FieldName" Foreign="OtherFieldName" />    
+        <COLUMN Local="FieldName" Foreign="OtherFieldName" />
     </References>
   </Table>
 </SCHEMA>
@@ -37,5 +37,83 @@ EOT;
         $completeGood = Normalizer::normalizeString($completeBad);
         $this->assertNotNull(Checker::checkString($completeBad));
         $this->assertNull(Checker::checkString($completeGood));
+    }
+
+    public function testParser()
+    {
+        $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5
+    http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
+>
+
+  <table name="Companies" engine="INNODB" comment="List of companies">
+    <field name="Id" type="integer" comment="Record identifier">
+      <unsigned />
+      <autoincrement />
+      <key />
+    </field>
+    <field name="Name" type="string" size="50" comment="Company name">
+      <notnull />
+    </field>
+  </table>
+
+  <table name="Employees" engine="INNODB">
+    <field name="Id" type="integer">
+      <unsigned />
+      <autoincrement />
+      <key />
+    </field>
+    <field name="IdentificationCode" type="string" size="20" />
+    <field name="Company" type="integer">
+      <unsigned />
+      <notnull />
+    </field>
+    <field name="FirstName" type="string" size="50">
+    	<default value="" />
+    	<notnull />
+    </field>
+    <field name="LastName" type="string" size="50">
+      <notnull />
+    </field>
+    <field name="Income" type="decimal" size="10.2">
+      <default value="1000" />
+    </field>
+    <field name="HiredOn" type="datetime">
+      <deftimestamp />
+    </field>
+    <index>
+      <fulltext />
+      <col>FirstName</col>
+    </index>
+    <index name="IX_EmployeesIdentificationCode">
+      <unique />
+      <col>IdentificationCode</col>
+    </index>
+    <references table="Companies" onupdate="cascade" ondelete="restrict">
+      <column local="Company" foreign="Id" />
+    </references>
+  </table>
+
+</schema>
+EOT
+        ;
+        $expectedSQL = array(
+            "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB COMMENT = 'List of companies'",
+            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode VARCHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB",
+            "ALTER TABLE Employees ADD CONSTRAINT FK_... FOREIGN KEY (Company) REFERENCES Companies (Id) ON UPDATE CASCADE ON DELETE RESTRICT",
+        );
+
+        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $schema = Parser::fromDocument($xml, $platform);
+        $generatedSQL = $schema->toSql($platform);
+        $this->assertSame(count($generatedSQL), count($expectedSQL));
+        for ($i = 0; $i < count($expectedSQL); $i++) {
+            $fixSQL = trim($generatedSQL[$i]);
+            $fixSQL = preg_replace('/ (FK_|IDX_)(\w+) /', ' $1... ', $fixSQL);
+            $this->assertSame($fixSQL, trim($expectedSQL[$i]));
+        }
     }
 }

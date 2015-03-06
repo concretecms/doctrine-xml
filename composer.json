@@ -1,4 +1,3 @@
-
 {
     "name": "concrete5/doctrine-xml",
     "description": "Define database structure via XML using Doctrine data types",
@@ -18,5 +17,8 @@
     },
     "require": {
         "php": ">=5.3"
+    },
+    "require-dev": {
+        "doctrine/dbal": "2.4.*"
     }
 }

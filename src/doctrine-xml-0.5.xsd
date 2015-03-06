@@ -114,6 +114,7 @@
 			<element name="fulltext" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
 			<element name="col" type="tns:databaseEntityNameType" minOccurs="1" maxOccurs="unbounded" />
 		</sequence>
+		<attribute name="name" type="tns:databaseEntityNameType" use="optional" />
 	</complexType>
 
 	<!-- Element type: /schema/table/references -->

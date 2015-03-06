@@ -134,6 +134,9 @@ EOT
     <field name="DateTime" type="datetime">
         <deftimestamp />
     </field>
+    <field name="TimeStamp" type="timestamp">
+        <deftimestamp />
+    </field>
     <!--<field name="DateTimeTZ" type="datetimetz">
         <deftimestamp />
     </field>-->
@@ -145,8 +148,7 @@ EOT
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = array_map('trim', $schema->toSql($platform));
         $this->assertSame(
-            //"CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
-            "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+            "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP"./*, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP*/") DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
             implode("\n", $generatedSQL)
         );
     }

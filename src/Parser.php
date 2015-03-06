@@ -116,13 +116,24 @@ class Parser
 
     protected static function parseField(Schema $schema, Table $table, SimpleXMLElement $xField, AbstractPlatform $platform)
     {
-        $field = $table->addColumn((string) $xField['name'], (string) $xField['type']);
+        $type = (string) $xField['type'];
+        $version = false;
+        switch ($type) {
+            case 'timestamp':
+                $type = 'datetime';
+                $version = true;
+                break;
+        }
+        $field = $table->addColumn((string) $xField['name'], $type);
+        if ($version) {
+            $field->setPlatformOption('version', true);
+        }
         $field->setUnsigned(isset($xField->unsigned));
         $field->setAutoincrement(isset($xField->autoincrement));
         if (isset($xField->default)) {
             $field->setDefault((string) $xField->default['value']);
         } elseif (isset($xField->deftimestamp)) {
-            switch ((string) $xField['type']) {
+            switch ($type) {
                 case 'date':
                     $field->setDefault($platform->getCurrentDateSQL());
                     break;
@@ -142,7 +153,7 @@ class Parser
         $field->setFixed(isset($xField->fixed));
         $size = (string) $xField['size'];
         if ($size !== '') {
-            switch ((string) $xField['type']) {
+            switch ($type) {
                 case 'decimal':
                 case 'float':
                     $precisionAndScale = explode('.', $size);

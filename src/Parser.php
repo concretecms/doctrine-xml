@@ -17,12 +17,13 @@ class Parser
      * @param AbstractPlatform $platform
      * @param bool $checkXml
      * @param bool $normalizeXml
+     * @param callable|null $tableFilter
      *
      * @throws Exception
      *
      * @return Schema
      */
-    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false)
+    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null)
     {
         if (!is_file($filename)) {
             throw new Exception('Unable to find the file '.$filename);
@@ -35,19 +36,20 @@ class Parser
             throw new Exception('Error reading from file: '.$filename);
         }
 
-        return static::fromDocument($xml, $checkXml, $normalizeXml);
+        return static::fromDocument($xml, $checkXml, $normalizeXml, $tableFilter);
     }
     /**
      * @param string|SimpleXMLElement $xml
      * @param AbstractPlatform $platform
      * @param bool $checkXml
      * @param bool $normalizeXml
+     * @param callable|null $tableFilter
      *
      * @throws Exception
      *
      * @return Schema
      */
-    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false)
+    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null)
     {
         if ($checkXml || $normalizeXml) {
             if (is_a($xml, '\SimpleXMLElement')) {
@@ -79,6 +81,9 @@ class Parser
         }
         $schema = new Schema();
         foreach ($xDoc->table as $xTable) {
+            if (isset($tableFilter) && ($tableFilter((string) $xTable['name']) === false)) {
+                continue;
+            }
             static::parseTable($schema, $xTable, $platform);
         }
 

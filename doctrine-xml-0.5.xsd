@@ -32,17 +32,10 @@
 		<sequence>
 			<element name="field" type="tns:fieldType" minOccurs="1" maxOccurs="unbounded"/>
 			<element name="index" type="tns:indexType" minOccurs="0" maxOccurs="unbounded" />
+			<element name="opt" type="tns:optType" minOccurs="0" maxOccurs="unbounded" />
 			<element name="references" type="tns:referencesType" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
-		<attribute name="engine" use="optional">
-			<simpleType>
-				<restriction base="string">
-					<enumeration value="MYISAM" />
-					<enumeration value="INNODB" />
-				</restriction>
-			</simpleType>
-		</attribute>
 		<attribute name="comment" use="optional">
 			<simpleType>
 				<restriction base="string">
@@ -64,6 +57,7 @@
 			</choice>
 			<element name="notnull" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
 			<element name="fixed" type="tns:emptyElementType" minOccurs="0" maxOccurs="1" />
+			<element name="opt" type="tns:optType" minOccurs="0" maxOccurs="unbounded" />
 		</sequence>
 		<attribute name="name" type="tns:databaseEntityNameType" use="required" />
 		<attribute name="type" type="tns:fieldTypeType" use="required" />
@@ -151,6 +145,18 @@
 	<complexType name="foreingColumnType">
 		<attribute name="local" type="tns:databaseEntityNameType" use="required" />
 		<attribute name="foreign" type="tns:databaseEntityNameType" use="required" />
+	</complexType>
+
+	<!-- Element type: /schema/table/opt and /schema/table/field/opt -->
+	<complexType name="optType">
+		<attribute name="for" use="required">
+			<simpleType>
+				<restriction base="string">
+					<minLength value="1" />
+				</restriction>
+			</simpleType>
+		</attribute>
+		<anyAttribute processContents="skip" />
 	</complexType>
 
 </schema>

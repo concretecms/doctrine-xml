@@ -27,10 +27,6 @@
       			<!-- Strip the 'xsi:schemaLocation' attribute, if present -->
       			<xsl:when test="$lowerCaseAttributeName = 'xsi:schemalocation'">
       			</xsl:when>
-      			<!-- The 'engine' attribute is only for the table definition: it should be always upper-case -->
-      			<xsl:when test="$lowerCaseAttributeName = 'engine'">
-      				<xsl:attribute name="{$lowerCaseAttributeName}"><xsl:value-of select="translate(., 'abcdefghijklmnopqrstuvwxyz', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ')"/></xsl:attribute>
-      			</xsl:when>
       			<!-- The 'type' attribute is only for the field definition: it should be always lower-case -->
       			<xsl:when test="$lowerCaseAttributeName = 'type'">
       				<xsl:attribute name="{$lowerCaseAttributeName}"><xsl:value-of select="translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/></xsl:attribute>
@@ -50,13 +46,13 @@
 			</xsl:for-each>
 			<!-- Let's parse the child nodes -->
 			<xsl:choose>
-				<!-- Sort children of table (field, index, references) -->
+				<!-- Sort children of table (field, index, opt, references) -->
 				<xsl:when test="$lowerCaseElementName = 'table'">
 					<xsl:apply-templates>
 						<xsl:sort select="translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')" data-type="text" order="ascending" />
 					</xsl:apply-templates> 
 				</xsl:when>
-				<!-- Sort children of field (autoincrement, key, default|deftimestamp, unsigned, notnull, fixed) -->
+				<!-- Sort children of field (autoincrement, key, default|deftimestamp, unsigned, notnull, fixed, opt) -->
 				<xsl:when test="$lowerCaseElementName = 'field'">
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'unsigned']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'autoincrement']" />
@@ -65,6 +61,7 @@
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'deftimestamp']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'notnull']" />
 					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'fixed']" />
+					<xsl:apply-templates select="node()[translate(name(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz') = 'opt']" />
 				</xsl:when>
 				<!-- Sort children of index (unique, fulltext, col) -->
 				<xsl:when test="$lowerCaseElementName = 'index'">

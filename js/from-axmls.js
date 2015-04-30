@@ -125,9 +125,7 @@ function convertTable(fromTable, toDoc, toParent) {
   getChildElements(fromTable, 'index').forEach(function(index) {
     convertTableIndex(index, toDoc, toTable);
   });
-  getChildElements(fromTable, 'opt').forEach(function(opt) {
-    convertTableOpt(opt, toDoc, toTable);
-  });
+  convertTableOpts(getChildElements(fromTable, 'opt'), toDoc, toTable);
   //Check unknown child nodes
   getChildElements(fromTable).forEach(function(child) {
     switch (child.nodeName.toLowerCase()) {
@@ -412,26 +410,42 @@ function convertTableIndex(fromIndex, toDoc, toTable) {
   });
   toTable.appendChild(toIndex);
 }
-function convertTableOpt(fromOpt, toDoc, toTable) {
-  var optValue = fromOpt.textContent;
-  var m = /(^|,|;)\s*engine\s*=\s*(\w+)/i.exec(optValue);
-  if (m) {
-    var engine = m[2].toUpperCase();
-    switch (engine) {
-      case 'MYISAM':
-      case 'INNODB':
-        var preEngine = getAttribute(toTable, 'engine');
-        if (preEngine !== null) {
-          if (preEngine !== engine) {
-            throw 'Multiple ENGINE specifications for different platforms is not supported.';
+function convertTableOpts(fromOpts, toDoc, toTable) {
+  var platformOpts = {};
+  fromOpts.forEach(function(fromOpt) {
+    var platform = getAttribute(fromOpt, 'platform');
+    if (platform) {
+      if (/^mysql/i.test(platform)) {
+        platform = 'MySQL';
+      }
+      fromOpt.textContent.replace(/[;,\s]+/g, ' ').split(' ').forEach(function(keyValue) {
+        var m = /^\s*(\w+)\s*=\s*(\w+)\s*$/.exec(keyValue);
+        if (!m) {
+          throw 'Unable to parse the OPT "' + fromOpt.textContent + '": bad key/value pair.';
+        }
+        var key = m[1].toLowerCase();
+        var value = m[2];
+        if (!(platform in platformOpts)) {
+          platformOpts[platform] = {};
+        }
+        if (key in platformOpts[platform]) {
+          if (platformOpts[platform][key].toLowerCase() !== value.toLowerCase()) {
+            throw 'Unable to parse the OPT "' + fromOpt.textContent + '": different values for the same platform and key.';
           }
         } else {
-          setAttribute(toDoc, toTable, 'engine', engine);
+          platformOpts[platform][key] = value;
         }
-        break;
-      default:
-        throw 'Unsupported table engine: "' + m[2] + '".';
+      });
     }
+  });
+  var toOpt;
+  for (var platform in platformOpts) {
+    toOpt = toDoc.createElement('opt');
+    setAttribute(toDoc, toOpt, 'for', platform);
+    for (var optKey in platformOpts[platform]) {
+      setAttribute(toDoc, toOpt, optKey, platformOpts[platform][optKey]);
+    }
+    toTable.appendChild(toOpt);
   }
 }
 
@@ -454,7 +468,7 @@ $('#from').on('change keypress keydown keyup blur mouseup click', function() {
 });
 $('#schemaLocation').on('change', function() {
   update(true);
-})
+});
 
 update();
 

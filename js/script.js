@@ -397,7 +397,9 @@ var convertFromAXMLS = (function() {
         break;
       case 'I1':
         toType = 'smallint';
-        if (fromSize !== null) {
+        if (fromSize === null) {
+          toType = 'boolean';
+        } else {
           if (fromSizeInt <= 0) {
             throw 'The integer field "' + name + '" has an invalid value for the "size" attribute ("' + fromSize + '").';
           } else if (fromSizeInt === 1) {

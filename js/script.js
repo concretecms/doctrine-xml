@@ -425,6 +425,8 @@ var convertFromAXMLS = (function() {
             throw 'The integer field "' + name + '" has an invalid value for the "size" attribute ("' + fromSize + '").';
           } else if (fromSizeInt === 1) {
             toType = 'boolean';
+          } else if (fromSizeInt < 5) {
+            toType = 'smallint';
           } else {
             toSize = fromSizeInt;
           }

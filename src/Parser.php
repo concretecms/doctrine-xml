@@ -73,7 +73,7 @@ class Parser
             $preUseInternalErrors = libxml_use_internal_errors(true);
             libxml_clear_errors();
             $xDoc = @simplexml_load_string($xml);
-            if (empty($xDoc)) {
+            if (!is_object($xDoc)) {
                 $errors = Utilities::explainLibXmlErrors();
                 libxml_clear_errors();
                 libxml_use_internal_errors($preUseInternalErrors);

@@ -187,7 +187,10 @@ var XSD = (function() {
   function stdCheck(xml) {
     for (var i = 0, n = xml.length; i < n; i++) {
        if (xml.charCodeAt(i) > 255) {
-         throw 'XSD validator does not support unicode/multibyte characters (unsupported char: "' + xml[i] + '")';
+         if (window.console && window.console.warn) {
+           window.console.warn('Replaced unsupported char "' + xml[i] + '" with "?" during XSD validation.');
+         }
+         xml[i] = '?';
        }
     }
     var lint = validateXML({

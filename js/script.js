@@ -190,7 +190,7 @@ var XSD = (function() {
          if (window.console && window.console.warn) {
            window.console.warn('Replaced unsupported char "' + xml[i] + '" with "?" during XSD validation.');
          }
-         xml[i] = '?';
+         xml = xml.substr(0, i) + '?' + xml.substr(i + 1);
        }
     }
     var lint = validateXML({

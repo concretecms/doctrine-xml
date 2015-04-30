@@ -20,7 +20,7 @@ Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation=".
     http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
 >
 
-  <table name="Companies" engine="INNODB" comment="List of companies">
+  <table name="Companies" comment="List of companies">
     <field name="Id" type="integer" comment="Record identifier">
       <unsigned />
       <autoincrement />
@@ -28,7 +28,9 @@ Please remark that the header lines `xmlns:xsi="..."` and `xsi:schemaLocation=".
     </field>
     <field name="Name" type="string" size="50" comment="Company name">
       <notnull />
+      <opt for="mysql" collation="utf8_bin" />
     </field>
+    <opt for="mysql" engine="InnoDB" charset="utf8" collate="utf8_unicode_ci" row_format="compact" />
   </table>
 
   <table name="Employees" engine="INNODB">

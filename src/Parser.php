@@ -6,6 +6,7 @@ use SimpleXMLElement;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
+use Doctrine\DBAL\Schema\Column;
 
 /**
  * Parse doctrine-xml data.
@@ -93,10 +94,6 @@ class Parser
     protected static function parseTable(Schema $schema, SimpleXMLElement $xTable, AbstractPlatform $platform)
     {
         $table = $schema->createTable((string) $xTable['name']);
-        $engine = (string) $xTable['engine'];
-        if ($engine !== '') {
-            $table->addOption('engine', $engine);
-        }
         $comment = (string) $xTable['comment'];
         if ($comment !== '') {
             $table->addOption('comment', $comment);
@@ -114,6 +111,7 @@ class Parser
         foreach ($xTable->index as $xIndex) {
             static::parseIndex($schema, $table, $xIndex, $platform);
         }
+        static::parseTableOpts($schema, $table, $xTable, $platform);
         foreach ($xTable->references as $xReferences) {
             static::parseForeignKey($schema, $table, $xReferences, $platform);
         }
@@ -176,6 +174,7 @@ class Parser
         if ($comment !== '') {
             $field->setComment($comment);
         }
+        static::parseFieldOpts($schema, $field, $xField, $platform);
     }
 
     protected static function parseIndex(Schema $schema, Table $table, SimpleXMLElement $xIndex, AbstractPlatform $platform)
@@ -197,6 +196,49 @@ class Parser
         }
     }
 
+    protected static function getOptArray(SimpleXMLElement $xOptParent, AbstractPlatform $platform)
+    {
+        $result = array();
+        foreach ($xOptParent->opt as $xOpt) {
+            $forThisPlatform = false;
+            foreach (explode(',', (string) $xOpt['for']) as $for) {
+                $for = trim($for);
+                if (($for === '*') || (strcasecmp($for, $platform->getName()) === 0)) {
+                    $forThisPlatform = true;
+                    break;
+                }
+            }
+            if ($forThisPlatform) {
+                foreach ($xOpt->attributes() as $name => $value) {
+                    
+                    if ($name !== 'for') {
+                        $value = trim((string) $value);
+                        if ($value !== '') {
+                            $result[$name] = $value;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    protected static function parseTableOpts(Schema $schema, Table $table, SimpleXMLElement $xOptParent, AbstractPlatform $platform)
+    {
+        $opts = static::getOptArray($xOptParent, $platform);
+        foreach ($opts as $name => $value) {
+            $table->addOption($name, $value);
+        }
+    }
+    protected static function parseFieldOpts(Schema $schema, Column $field, SimpleXMLElement $xOptParent, AbstractPlatform $platform)
+    {
+        $opts = static::getOptArray($xOptParent, $platform);
+        foreach ($opts as $name => $value) {
+            $field->setPlatformOption($name, $value);
+        }
+    }
+    
     protected static function parseForeignKey(Schema $schema, Table $table, SimpleXMLElement $xForeignKey, AbstractPlatform $platform)
     {
         $foreignTable = (string) $xForeignKey['table'];

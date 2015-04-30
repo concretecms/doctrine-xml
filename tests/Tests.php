@@ -49,7 +49,7 @@ EOT;
     http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
 >
 
-  <table name="Companies" engine="INNODB" comment="List of companies">
+  <table name="Companies" comment="List of companies">
     <field name="Id" type="integer" comment="Record identifier">
       <unsigned />
       <autoincrement />
@@ -60,7 +60,7 @@ EOT;
     </field>
   </table>
 
-  <table name="Employees" engine="INNODB">
+  <table name="Employees">
     <field name="Id" type="integer">
       <unsigned />
       <autoincrement />
@@ -103,8 +103,8 @@ EOT;
 EOT
         ;
         $expectedSQL = array(
-            "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB COMMENT = 'List of companies'",
-            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = INNODB",
+            "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = 'List of companies'",
+            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
             "ALTER TABLE Employees ADD CONSTRAINT FK_... FOREIGN KEY (Company) REFERENCES Companies (Id) ON UPDATE CASCADE ON DELETE RESTRICT",
         );
 
@@ -148,7 +148,50 @@ EOT
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = array_map('trim', $schema->toSql($platform));
         $this->assertSame(
-            "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+            "CREATE TABLE Test ("
+              ."Date DATE DEFAULT CURRENT_DATE, "
+              ."Time TIME DEFAULT CURRENT_TIME, "
+              ."DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, "
+              ."TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
+              ."DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP"
+            .") DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+            implode("\n", $generatedSQL)
+        );
+    }
+
+    public function testOpt()
+    {
+        $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5">
+  <table name="Table1">
+    <field name="Field11" type="integer">
+        <opt for="foo" collate="collateForFoo" />
+    </field>
+    <field name="Field12" type="integer">
+        <opt for="*" collation="collateForAny" />
+    </field>
+    <field name="Field13" type="integer">
+        <opt for="mYsQl" collation="collateForMySQLOnly" />
+    </field>
+    <field name="Field14" type="integer">
+        <opt for="db1,MySQL,db2" collation="collateForMySQLAmongOthers" />
+    </field>
+    <opt for="*" charset="tableCharset" collate="tableCollation" engine="MyISAM" />
+  </table>
+</schema>
+EOT
+        ;
+        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $schema = Parser::fromDocument($xml, $platform);
+        $generatedSQL = array_map('trim', $schema->toSql($platform));
+        $this->assertSame(
+            "CREATE TABLE Table1 ("
+              ."Field11 INT DEFAULT NULL, "
+              ."Field12 INT DEFAULT NULL COLLATE collateForAny, "
+              ."Field13 INT DEFAULT NULL COLLATE collateForMySQLOnly, "
+              ."Field14 INT DEFAULT NULL COLLATE collateForMySQLAmongOthers"
+            .") DEFAULT CHARACTER SET tableCharset COLLATE tableCollation ENGINE = MyISAM",
             implode("\n", $generatedSQL)
         );
     }

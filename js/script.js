@@ -283,7 +283,10 @@ var convertFromAXMLS = (function() {
     for(var attributeName in attributes) {
       switch (attributeName) {
         case 'name':
-          name = attributes[attributeName];
+          name = $.trim(attributes[attributeName]);
+          if (name === '') {
+            throw 'A table element has an empty "name" attribute.';
+          }
           break;
         default:
           throw 'Unknown table attribute: "' + attributeName + '".';
@@ -324,10 +327,17 @@ var convertFromAXMLS = (function() {
     for(var attributeName in attributes) {
       switch (attributeName) {
         case 'name':
-          name = attributes[attributeName];
+          name = $.trim(attributes[attributeName]);
+          if (name === '') {
+            throw 'A field element has an empty "name" attribute.';
+          }
           break;
         case 'type':
-          fromType = attributes[attributeName];
+          fromType = $.trim(attributes[attributeName]);
+          if (fromType === '') {
+            throw 'A field element has an empty "type" attribute.';
+          }
+          break;
           break;
         case 'size':
           fromSize = attributes[attributeName];
@@ -346,6 +356,9 @@ var convertFromAXMLS = (function() {
     }
     if (name === null) {
       throw 'A field element is missing the "name" attribute.';
+    }
+    if (fromType === null) {
+      throw 'A field element is missing the "type" attribute.';
     }
     setAttribute(toDoc, toField, 'name', name);
     var toType = null, toSize = null;
@@ -674,12 +687,25 @@ var convertFromAXMLS = (function() {
   };
 })();
 
-function Action(name, inName, outName, process) {
+function Action(name, inName, outName, initialSource, process) {
   var me = this;
   me.name = name;
   me.inName = inName;
   me.outName = outName;
   me.process = process;
+  me.initialSource = '';
+  me.initialSourceCursor = null;
+  if (initialSource) {
+    var p = initialSource.indexOf('<<CURSOR>>');
+    if (p >= 0) {
+      var s = initialSource.substr(0, p);
+      me.initialSourceCursor = {row: s.replace(/[^\n]/g, '').length, column: s.substr(s.lastIndexOf('\n')).length - 1};
+      initialSource = s + initialSource.substr(p + '<<CURSOR>>'.length);
+    }
+    me.initialSource = initialSource;
+  }
+  var m = /^(.*)<<CURSOR>>(.*)$/mg.exec(me.initialSource);
+  console.log(m);
   Action.all.push(me);
   $('.dx-actions').append(
     me.btn = $('<button type="button" class="btn btn-default" />')
@@ -700,6 +726,12 @@ Action.activate = function(action) {
   if (Action.active === action) {
     return;
   }
+  var currentSource = sourceEditor.getSession().getValue();
+  if (Action.active !== null) {
+    if ((Action.active.initialSource.length > 0) && (currentSource === Action.active.initialSource)) {
+      sourceEditor.getSession().setValue(currentSource = '');
+    } 
+  }
   Action.active = null;
   $('.sx-in-name').empty();
   $('.sx-out-name').empty();
@@ -709,6 +741,13 @@ Action.activate = function(action) {
       $('.sx-in-name').text(this.inName);
       $('.sx-out-name').text(this.outName);
       this.btn.removeClass('btn-default').addClass('btn-primary');
+      if ((this.initialSource.length > 0) && (currentSource === '')) {
+        sourceEditor.getSession().setValue(this.initialSource);
+        if (this.initialSourceCursor) {
+          sourceEditor.focus();
+          sourceEditor.moveCursorTo(this.initialSourceCursor.row, this.initialSourceCursor.column);
+        }
+      }
     } else {
       this.btn.removeClass('btn-primary').addClass('btn-default');
     }
@@ -719,6 +758,12 @@ new Action(
   'Normalize Doctrine XML',
   'Doctrine XML to normalize',
   'Normalized XML',
+  [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    '<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5">',
+    '  <<CURSOR>>',
+    '</schema>',
+  ''].join('\n'),
   function(data) {
     try {
       if(XSD.ready === false) {
@@ -748,6 +793,12 @@ new Action(
   'Convert from AXMLS',
   'AXMLS to convert',
   'Resulting Doctrine XML',
+  [
+   '<?xml version="1.0" encoding="UTF-8"?>',
+   '<schema version="0.3">',
+   '  <<CURSOR>>',
+   '</schema>',
+ ''].join('\n'),
   function(data) {
     try {
       data.destination = convertFromAXMLS(data.source, true);
@@ -841,16 +892,9 @@ copyFormatted.on('aftercopy', function() {
 
 Action.all[0].activate();
 
-sourceEditor.getSession().setValue([
-  '<?xml version="1.0" encoding="UTF-8"?>',
-  '<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5">',
-  '  ',
-  '</schema>',
-  ''].join('\n'));
 sourceEditor.on('change', function() {
   update();
 });
-sourceEditor.focus();
-sourceEditor.moveCursorTo(2, 3);
+
 
 });

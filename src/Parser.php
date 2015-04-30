@@ -1,4 +1,5 @@
 <?php
+
 namespace DoctrineXml;
 
 use Exception;
@@ -210,7 +211,6 @@ class Parser
             }
             if ($forThisPlatform) {
                 foreach ($xOpt->attributes() as $name => $value) {
-                    
                     if ($name !== 'for') {
                         $value = trim((string) $value);
                         if ($value !== '') {
@@ -238,7 +238,7 @@ class Parser
             $field->setPlatformOption($name, $value);
         }
     }
-    
+
     protected static function parseForeignKey(Schema $schema, Table $table, SimpleXMLElement $xForeignKey, AbstractPlatform $platform)
     {
         $foreignTable = (string) $xForeignKey['table'];

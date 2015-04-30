@@ -10,50 +10,54 @@
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-12">
-      <h2>Doctrine XML builder</h2>
+    <div class="col-md-4">
+      <div class="btn-group dx-actions" role="group">
+        <!-- <button type="button" class="btn btn-default dx-action" data-dx-action="normalize">Normalize Doctrine XML</button>
+        <button type="button" class="btn btn-default dx-action" data-dx-action="from-axmls">Convert from AXMLS</button>
+         -->
+      </div>
+    </div>
+  </div>
+  <p></p>
+  <div class="row">
+    <div class="col-md-7">
+      <div class="panel panel-default">
+        <div class="panel-heading sx-in-name"></div>
+        <div class="panel-body">
+          <div class="xml-editor" id="xml-source"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5">
+      <div class="panel panel-success">
+        <div class="panel-heading">Input analysis</div>
+        <div class="panel-body">
+          <div class="check" id="check-source"></div>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row">
     <div class="col-md-7">
-    	<div class="panel panel-default">
-    		<div class="panel-heading">Input XML</div>
-			<div class="panel-body">
-				<div class="xml-editor" id="xml-source"></div>
-			</div>
-		</div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span class="sx-out-name"></span>
+          <a href="javascript:void(0)" class="pull-right" id="selectall-formatted">Select all</a>
+          <a href="javascript:void(0)" class="pull-right" id="copy-formatted">Copy</a>
+          <span class="pull-right" id="copy-formatted-done"><span class="glyphicon glyphicon-ok"></span></span>
+        </div>
+        <div class="panel-body">
+          <div class="xml-editor" id="xml-formatted"></div>
+        </div>
+      </div>
     </div>
     <div class="col-md-5">
-    	<div class="panel panel-success">
-    		<div class="panel-heading">Input analysis</div>
-			<div class="panel-body">
-				<div class="check" id="check-source"></div>
-			</div>
-		</div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-7">
-    	<div class="panel panel-default">
-    		<div class="panel-heading">
-    			Normalized XML
-    			<a href="javascript:void(0)" class="pull-right" id="selectall-formatted">Select all</a>
-    			<a href="javascript:void(0)" class="pull-right" id="copy-formatted">Copy</a>
-    			<span class="pull-right" id="copy-formatted-done"><span class="glyphicon glyphicon-ok"></span></span>
-    		</div>
-			<div class="panel-body">
-				<div class="xml-editor" id="xml-formatted"></div>
-				
-			</div>
-		</div>
-    </div>
-    <div class="col-md-5">
-    	<div class="panel panel-success">
-    		<div class="panel-heading">Normalized analysis</div>
-			<div class="panel-body">
-				<div class="check" id="check-formatted"></div>
-			</div>
-		</div>
+      <div class="panel panel-success">
+        <div class="panel-heading">Output analysis</div>
+        <div class="panel-body">
+          <div class="check" id="check-formatted"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -61,5 +65,6 @@
 <script src="js/jquery-1.11.2.js"></script>
 <script src="js/ace-1.1.8.js"></script>
 <script src="js/ZeroClipboard-2.2.0.js"></script>
+<script src="js/vkbeautify.0.99.00.beta.js"></script>
 <script src="js/script.js"></script>
 </html>

@@ -687,7 +687,7 @@ var convertFromAXMLS = (function() {
     result = vkbeautify.xml(result, 2);
     result = '<?xml version="1.0" encoding="UTF-8"?>\n' + result.substr(result.indexOf('<schema'));
     result = result.replace(/\n  <table/g, '\n\n  <table').replace('\n</schema>', '\n\n</schema>');
-    return result;
+    return $.trim(result) + '\n';
   };
 })();
 

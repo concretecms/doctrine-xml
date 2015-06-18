@@ -29,6 +29,44 @@ function createEditor(id) {
 var sourceEditor = createEditor('xml-source');
 var formattedEditor = createEditor('xml-formatted');
 
+function normalizeDXML(xml, includeSchemaLocation) {
+  xml = (typeof xml === 'string') ? $.trim(xml) : '';
+  var i = xml.indexOf('<schema');
+  if (i < 0) {
+    xml = '';
+  } else {
+    xml = xml.substr(i);
+    i = xml.indexOf('>');
+    if (i <= 0) {
+      xml = '';
+    } else {
+      xml = $.trim(xml.substr(i + 1));
+      if (xml === '</schema>') {
+        xml = '';
+      }
+      var start = '<schema';
+      var xmlns = 'xmlns="http://www.concrete5.org/doctrine-xml/0.5"';
+      if (includeSchemaLocation) {
+        start += '\n  ' + xmlns;
+        start += '\n  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"';
+        start += '\n  xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5 http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"';
+        start += '\n' + ((xml === '') ? '/>' : '>');
+      } else {
+        start += ' ' + xmlns + ((xml === '') ? '/>' : '>');
+      }
+      if (xml !== '') {
+        xml = xml.replace(/\n+[ \t]*<table/g, '\n\n  <table').replace(/\n+<\/schema>/g, '\n\n</schema>');
+        if (xml.indexOf('<table') === 0) {
+          xml = '\n  ' + xml;
+        }
+        xml = xml.replace(/\n\t\t\t\t\t/g, '\n          ').replace(/\n\t\t\t\t/g, '\n        ').replace(/\n\t\t\t/g, '\n      ').replace(/\n\t\t/g, '\n    ').replace(/\n\t/g, '\n  ');
+      }
+      xml = '<?xml version="1.0" encoding="UTF-8"?>\n' + ((xml === '') ? start : (start + '\n' + xml)) + '\n';
+    }
+  }
+  return xml;
+}
+
 var XSLT = (function() {
   var ext = {
     ready: false
@@ -78,7 +116,7 @@ var XSLT = (function() {
   })
   ;
 
-  function stdProcess(sourceXml) {
+  function stdProcess(sourceXml, includeSchemaLocation) {
     var parser = new DOMParser();
     var sourceDoc = parser.parseFromString(sourceXml, 'text/xml');
     if(sourceDoc === null) {
@@ -103,12 +141,9 @@ var XSLT = (function() {
     if((typeof(transformedXml) !== 'string') || (transformedXml === '')){
       throw 'Error retrieving XML from XML Document';
     }
-    if(transformedXml.indexOf('<?xml') !== 0) {
-      transformedXml = '<?xml version="1.0" encoding="UTF-8"?>\n' + transformedXml;
-    }
-    return transformedXml;
+    return normalizeDXML(transformedXml, includeSchemaLocation);
   }
-  function ieProcess(sourceXml) {
+  function ieProcess(sourceXml, includeSchemaLocation) {
     var sourceDoc = new ActiveXObject('Msxml2.DOMDocument.6.0');
     sourceDoc.async = false;
     sourceDoc.validateOnParse = true;
@@ -120,7 +155,7 @@ var XSLT = (function() {
     transformedDoc.async = false;
     transformedDoc.validateOnParse = true;
     sourceDoc.transformNodeToObject(ieProcess.xslt, transformedDoc);
-    return transformedDoc.xml.replace(/^<\?xml version="1.0"\s*\?>/, '<?xml version="1.0" encoding="UTF-8" ?>');
+    return normalizeDXML(transformedDoc.xml, includeSchemaLocation);
   }
   return ext;
 })();
@@ -337,7 +372,6 @@ var convertFromAXMLS = (function() {
           if (fromType === '') {
             throw 'A field element has an empty "type" attribute.';
           }
-          break;
           break;
         case 'size':
           fromSize = attributes[attributeName];
@@ -664,13 +698,7 @@ var convertFromAXMLS = (function() {
     if (schemaVersion !== '0.3') {
       throw 'The schema version should be "0.3", "'+ schemaVersion + '" was found.';
     }
-    var baseXml = '<?xml version="1.0" encoding="UTF-8"?>';
-    baseXml += '<schema xmlns="http://www.concrete5.org/doctrine-xml/0.5"';
-    if (includeSchemaLocation) {
-      baseXml += ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5 http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"';
-    }
-    baseXml += ' />';
-    var toDoc = stringToDoc(baseXml);
+    var toDoc = stringToDoc('<?xml version="1.0" encoding="UTF-8"?><schema xmlns="http://www.concrete5.org/doctrine-xml/0.5" />');
     var toRoot = toDoc.childNodes[0];
     getChildElements(fromSchema).forEach(function(child) {
       switch (child.nodeName.toLowerCase()) {
@@ -685,9 +713,7 @@ var convertFromAXMLS = (function() {
     var result = oSerializer.serializeToString(toDoc);
     result = result.replace(/\s+xmlns=""/g, '');
     result = vkbeautify.xml(result, 2);
-    result = '<?xml version="1.0" encoding="UTF-8"?>\n' + result.substr(result.indexOf('<schema'));
-    result = result.replace(/\n  <table/g, '\n\n  <table').replace('\n</schema>', '\n\n</schema>');
-    return $.trim(result) + '\n';
+    return normalizeDXML(result, includeSchemaLocation);
   };
 })();
 
@@ -709,7 +735,6 @@ function Action(name, inName, outName, initialSource, process) {
     me.initialSource = initialSource;
   }
   var m = /^(.*)<<CURSOR>>(.*)$/mg.exec(me.initialSource);
-  console.log(m);
   Action.all.push(me);
   $('.dx-actions').append(
     me.btn = $('<button type="button" class="btn btn-default" />')
@@ -787,7 +812,7 @@ new Action(
       if (XSLT.error !== null) {
         throw XSLT.error;
       }
-      data.destination = XSLT.process(data.source);
+      data.destination = XSLT.process(data.source, $('#add-schemalocation input').is(':checked'));
     } catch (e) {
       data.destinationError = e;
     }
@@ -805,7 +830,7 @@ new Action(
  ''].join('\n'),
   function(data) {
     try {
-      data.destination = convertFromAXMLS(data.source, true);
+      data.destination = convertFromAXMLS(data.source, $('#add-schemalocation input').is(':checked'));
     } catch (e) {
       data.sourceError = e;
     }
@@ -900,5 +925,8 @@ sourceEditor.on('change', function() {
   update();
 });
 
+$('#add-schemalocation input').on('change', function() {
+  update(true);
+});
 
 });

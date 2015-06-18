@@ -30,3 +30,8 @@ body {
 	display: none;
 	padding-right: 10px;
 }
+#add-schemalocation {
+	position: absolute;
+	right: 100px;
+	font-weight: normal; 
+}

@@ -10,12 +10,8 @@
 <body>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
-      <div class="btn-group dx-actions" role="group">
-        <!-- <button type="button" class="btn btn-default dx-action" data-dx-action="normalize">Normalize Doctrine XML</button>
-        <button type="button" class="btn btn-default dx-action" data-dx-action="from-axmls">Convert from AXMLS</button>
-         -->
-      </div>
+    <div class="col-md-7">
+      <div class="btn-group dx-actions" role="group"></div>
     </div>
   </div>
   <p></p>
@@ -45,6 +41,7 @@
           <a href="javascript:void(0)" class="pull-right" id="selectall-formatted">Select all</a>
           <a href="javascript:void(0)" class="pull-right" id="copy-formatted">Copy</a>
           <span class="pull-right" id="copy-formatted-done"><span class="glyphicon glyphicon-ok"></span></span>
+          <label class="pull-right" id="add-schemalocation"><input type="checkbox" checked> Add schema location <a href="javascript: void(0)" class="label label-info" onclick="alert('If checked, the resulting XML will contain the URL of the schema location.\nThis is not required, but it\'s very handy when using IDE editors that support it (you\'ll have auto-completion and validation of the XML).')">?</a></label>
         </div>
         <div class="panel-body">
           <div class="xml-editor" id="xml-formatted"></div>

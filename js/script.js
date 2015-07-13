@@ -622,9 +622,11 @@ var convertFromAXMLS = (function() {
       throw 'An index element is missing col definitions.';
     }
     cols.forEach(function(fromCol) {
-      var toCol = toDoc.createElement('col');
-      toCol.innerHTML = fromCol.innerHTML;
-      toIndex.appendChild(toCol);
+      fromCol.innerHTML.split(",").forEach(function (fromColValue) {
+        var toCol = toDoc.createElement('col');
+        toCol.innerHTML = fromColValue;
+        toIndex.appendChild(toCol);
+      });
     });
     // Check unknown child nodes
     getChildElements(fromIndex).forEach(function(child) {

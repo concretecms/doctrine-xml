@@ -38,7 +38,7 @@ class Parser
             throw new Exception('Error reading from file: '.$filename);
         }
 
-        return static::fromDocument($xml, $checkXml, $normalizeXml, $tableFilter);
+        return static::fromDocument($xml, $platform, $checkXml, $normalizeXml, $tableFilter);
     }
     /**
      * @param string|SimpleXMLElement $xml

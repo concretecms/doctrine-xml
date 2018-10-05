@@ -8,6 +8,7 @@ use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Doctrine\DBAL\Schema\Column;
+use Doctrine\DBAL\Schema\SchemaConfig;
 
 /**
  * Parse doctrine-xml data.
@@ -47,12 +48,13 @@ class Parser
      * @param bool $normalizeXml
      * @param callable|null $tableFilter
      * @param string|null $platformVersion
+     * @param \Doctrine\DBAL\Schema\SchemaConfig|null $schemaConfig
      *
      * @throws Exception
      *
      * @return Schema
      */
-    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null)
+    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, SchemaConfig $schemaConfig = null)
     {
         if ($checkXml || $normalizeXml) {
             if (is_a($xml, '\SimpleXMLElement')) {
@@ -82,7 +84,11 @@ class Parser
             }
             libxml_use_internal_errors($preUseInternalErrors);
         }
-        $schema = new Schema();
+        if ($schemaConfig === null) {
+            $schema = new Schema();
+        } else {
+            $schema = new Schema(array(), array(), $schemaConfig);
+        }
         foreach ($xDoc->table as $xTable) {
             if (isset($tableFilter) && ($tableFilter((string) $xTable['name']) === false)) {
                 continue;

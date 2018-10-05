@@ -21,12 +21,14 @@ class Parser
      * @param bool $checkXml
      * @param bool $normalizeXml
      * @param callable|null $tableFilter
+     * @param string|null $platformVersion
+     * @param \Doctrine\DBAL\Schema\SchemaConfig|null $schemaConfig
      *
      * @throws Exception
      *
      * @return Schema
      */
-    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null)
+    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, SchemaConfig $schemaConfig = null)
     {
         if (!is_file($filename)) {
             throw new Exception('Unable to find the file '.$filename);
@@ -39,8 +41,9 @@ class Parser
             throw new Exception('Error reading from file: '.$filename);
         }
 
-        return static::fromDocument($xml, $platform, $checkXml, $normalizeXml, $tableFilter);
+        return static::fromDocument($xml, $platform, $checkXml, $normalizeXml, $tableFilter, $platformVersion, $schemaConfig);
     }
+
     /**
      * @param string|SimpleXMLElement $xml
      * @param AbstractPlatform $platform

@@ -1,5 +1,5 @@
 {
-    "name": "concrete5/doctrine-xml",
+    "name": "concretecms/doctrine-xml",
     "description": "Define database structure via XML using Doctrine data types",
     "keywords": [
         "doctrine",

@@ -8,7 +8,7 @@
         "database",
         "schema"
     ],
-    "homepage": "https://github.com/concrete5/doctrine-xml",
+    "homepage": "https://github.com/concretecms/doctrine-xml",
     "license": "MIT",
     "autoload": {
         "psr-4": {

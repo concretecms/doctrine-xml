@@ -46,7 +46,7 @@ EOT;
 <schema xmlns="http://www.concrete5.org/doctrine-xml/0.5"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.concrete5.org/doctrine-xml/0.5
-    http://concrete5.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
+    https://concretecms.github.io/doctrine-xml/doctrine-xml-0.5.xsd"
 >
 
   <table name="Companies" comment="List of companies">

@@ -2,8 +2,10 @@
 use DoctrineXml\Normalizer;
 use DoctrineXml\Checker;
 use DoctrineXml\Parser;
+use PHPUnit\Framework\TestCase;
 
-class Tests extends PHPUnit_Framework_TestCase
+
+class Tests extends TestCase
 {
     public function testNormalized()
     {

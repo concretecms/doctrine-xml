@@ -1,0 +1,119 @@
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags-ignore:
+      - "**"
+  pull_request:
+    branches:
+      - main
+      - master
+
+jobs:
+  tests:
+    name: ${{ matrix.php-version }} on ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          -
+            os: ubuntu-latest
+            php-version: "5.3"
+            composer: composer:v2.2
+            phpunit: phpunit:v4
+          -
+            os: ubuntu-latest
+            php-version: "5.4"
+            composer: composer:v2.2
+            phpunit: phpunit:v4
+          -
+            os: ubuntu-latest
+            php-version: "5.5"
+            composer: composer:v2.2
+            phpunit: phpunit:v4
+          -
+            os: ubuntu-latest
+            php-version: "5.6"
+            composer: composer:v2.2
+            phpunit: phpunit:v5
+          -
+            os: ubuntu-latest
+            php-version: "7.0"
+            composer: composer:v2.2
+            phpunit: phpunit:v6
+          -
+            os: ubuntu-latest
+            php-version: "7.1"
+            composer: composer:v2.2
+            phpunit: phpunit:v7
+          -
+            os: ubuntu-latest
+            php-version: "7.2"
+            composer: composer:v2
+            phpunit: phpunit:v8
+          -
+            os: ubuntu-latest
+            php-version: "7.3"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: ubuntu-latest
+            php-version: "7.4"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: ubuntu-latest
+            php-version: "8.0"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: ubuntu-latest
+            php-version: "8.1"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: ubuntu-latest
+            php-version: "8.2"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: ubuntu-latest
+            php-version: "8.3"
+            composer: composer:v2
+            phpunit: phpunit:v9
+          -
+            os: windows-latest
+            php-version: "5.5"
+            composer: composer:v2.2
+            phpunit: phpunit:v4
+          -
+            os: windows-latest
+            php-version: "7.4"
+            composer: composer:v2.2
+            phpunit: phpunit:v9
+          -
+            os: windows-latest
+            php-version: "8.3"
+            composer: composer:v2.2
+            phpunit: phpunit:v9
+    runs-on: ${{ matrix.os }}
+    steps:
+      -
+        name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: xsl
+          tools: ${{ matrix.composer }},${{ matrix.phpunit }}
+          coverage: none
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Install Composer dependencies
+        run: composer update --optimize-autoloader --no-progress --ansi --no-interaction
+      -
+        name: PHPUnit
+        run: phpunit

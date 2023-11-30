@@ -1,6 +1,8 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(-1);
 
+if (!extension_loaded('xsl')) {
+    echo "The XSL PHP extension must be enabled.\n";
+    exit(1);
+}
 require_once dirname(__DIR__).'/vendor/autoload.php';
-
-PHPUnit_Framework_Error_Notice::$enabled = true;

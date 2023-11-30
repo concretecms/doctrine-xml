@@ -14,90 +14,103 @@ on:
 
 jobs:
   tests:
-    name: ${{ matrix.php-version }} on ${{ matrix.os }}
+    name: ${{ matrix.php-version }} on ${{ matrix.os }} ${{ matrix.composer-flags }}
     strategy:
       matrix:
         include:
           -
             os: ubuntu-latest
             php-version: "5.3"
-            composer: composer:v2.2
-            phpunit: phpunit:v4
+            composer-version: "2.2"
+            composer-flags: --prefer-lowest
+            phpunit-version: "4"
           -
             os: ubuntu-latest
             php-version: "5.4"
-            composer: composer:v2.2
-            phpunit: phpunit:v4
+            composer-version: "2.2"
+            phpunit-version: "4"
           -
             os: ubuntu-latest
             php-version: "5.5"
-            composer: composer:v2.2
-            phpunit: phpunit:v4
+            composer-version: "2.2"
+            composer-flags: --prefer-lowest
+            phpunit-version: "4"
+          -
+            os: ubuntu-latest
+            php-version: "5.5"
+            composer-version: "2.2"
+            phpunit-version: "4"
           -
             os: ubuntu-latest
             php-version: "5.6"
-            composer: composer:v2.2
-            phpunit: phpunit:v5
+            composer-version: "2.2"
+            phpunit-version: "5"
           -
             os: ubuntu-latest
             php-version: "7.0"
-            composer: composer:v2.2
-            phpunit: phpunit:v6
+            composer-version: "2.2"
+            phpunit-version: "6"
           -
             os: ubuntu-latest
             php-version: "7.1"
-            composer: composer:v2.2
-            phpunit: phpunit:v7
+            composer-version: "2.2"
+            phpunit-version: "7"
           -
             os: ubuntu-latest
             php-version: "7.2"
-            composer: composer:v2
-            phpunit: phpunit:v8
+            composer-version: "2"
+            phpunit-version: "8"
           -
             os: ubuntu-latest
             php-version: "7.3"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            composer-flags: --prefer-lowest
+            phpunit-version: "9"
+          -
+            os: ubuntu-latest
+            php-version: "7.3"
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: ubuntu-latest
             php-version: "7.4"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: ubuntu-latest
             php-version: "8.0"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: ubuntu-latest
             php-version: "8.1"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: ubuntu-latest
             php-version: "8.2"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: ubuntu-latest
             php-version: "8.3"
-            composer: composer:v2
-            phpunit: phpunit:v9
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: windows-latest
             php-version: "5.5"
-            composer: composer:v2.2
-            phpunit: phpunit:v4
+            composer-version: "2.2"
+            phpunit-version: "4"
           -
             os: windows-latest
             php-version: "7.4"
-            composer: composer:v2.2
-            phpunit: phpunit:v9
+            composer-version: "2.2"
+            phpunit-version: "9"
           -
             os: windows-latest
             php-version: "8.3"
-            composer: composer:v2.2
-            phpunit: phpunit:v9
+            composer-version: "2.2"
+            phpunit-version: "9"
     runs-on: ${{ matrix.os }}
     steps:
       -
@@ -106,14 +119,14 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: xsl
-          tools: ${{ matrix.composer }},${{ matrix.phpunit }}
+          tools: composer:v${{ matrix.composer-version }},phpunit:v${{ matrix.phpunit-version }}
           coverage: none
       -
         name: Checkout
         uses: actions/checkout@v4
       -
         name: Install Composer dependencies
-        run: composer update --optimize-autoloader --no-progress --ansi --no-interaction
+        run: composer update --optimize-autoloader --no-progress --ansi --no-interaction ${{ matrix.composer-flags }}
       -
         name: PHPUnit
         run: phpunit

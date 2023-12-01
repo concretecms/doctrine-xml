@@ -19,6 +19,7 @@
         "php": ">=5.3"
     },
     "require-dev": {
-        "doctrine/dbal": "2.5.*"
+        "ext-xsl": "*",
+        "doctrine/dbal": "^2.5 || ^3"
     }
 }

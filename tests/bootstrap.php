@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
+error_reporting(-1);
 
-require_once dirname(__DIR__).'/vendor/autoload.php';
-
-PHPUnit_Framework_Error_Notice::$enabled = true;
+require_once __DIR__ . '/../vendor/autoload.php';

@@ -2,8 +2,10 @@
 use DoctrineXml\Normalizer;
 use DoctrineXml\Checker;
 use DoctrineXml\Parser;
+use PHPUnit\Framework\TestCase;
 
-class Tests extends PHPUnit_Framework_TestCase
+
+class Tests extends TestCase
 {
     public function testNormalized()
     {
@@ -103,19 +105,27 @@ EOT;
 EOT
         ;
         $expectedSQL = array(
-            "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = 'List of companies'",
-            "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
-            "ALTER TABLE Employees ADD CONSTRAINT FK_... FOREIGN KEY (Company) REFERENCES Companies (Id) ON UPDATE CASCADE ON DELETE RESTRICT",
+            array(
+              "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB COMMENT = 'List of companies'",
+              "CREATE TABLE Companies (Id INT UNSIGNED AUTO_INCREMENT NOT NULL COMMENT 'Record identifier', Name VARCHAR(50) NOT NULL COMMENT 'Company name', PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB COMMENT = 'List of companies'",
+            ),
+            array(
+              "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+              "CREATE TABLE Employees (Id INT UNSIGNED AUTO_INCREMENT NOT NULL, IdentificationCode CHAR(20) DEFAULT NULL, Company INT UNSIGNED NOT NULL, FirstName VARCHAR(50) DEFAULT '' NOT NULL, LastName VARCHAR(50) NOT NULL, Income NUMERIC(10, 2) DEFAULT '1000', HiredOn DATETIME DEFAULT CURRENT_TIMESTAMP, FULLTEXT INDEX IDX_... (FirstName), UNIQUE INDEX IX_EmployeesIdentificationCode (IdentificationCode), INDEX IDX_... (Company), PRIMARY KEY(Id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB",
+            ),
+            array(
+              "ALTER TABLE Employees ADD CONSTRAINT FK_... FOREIGN KEY (Company) REFERENCES Companies (Id) ON UPDATE CASCADE ON DELETE RESTRICT",
+            ),
         );
 
-        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $platform = self::getMySQLPlatformInstance();
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = $schema->toSql($platform);
         $this->assertSame(count($expectedSQL), count($generatedSQL));
         for ($i = 0; $i < count($expectedSQL); $i++) {
             $fixSQL = trim($generatedSQL[$i]);
             $fixSQL = preg_replace('/ (FK_|IDX_)(\w+) /', ' $1... ', $fixSQL);
-            $this->assertSame(trim($expectedSQL[$i]), $fixSQL);
+            $this->assertContains($fixSQL, $expectedSQL[$i]);
         }
     }
 
@@ -144,18 +154,15 @@ EOT
 </schema>
 EOT
         ;
-        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $platform = self::getMySQLPlatformInstance();
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = array_map('trim', $schema->toSql($platform));
-        $this->assertSame(
-            "CREATE TABLE Test ("
-              ."Date DATE DEFAULT CURRENT_DATE, "
-              ."Time TIME DEFAULT CURRENT_TIME, "
-              ."DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, "
-              ."TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, "
-              ."DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP"
-            .") DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
-            implode("\n", $generatedSQL)
+        $this->assertContains(
+            implode("\n", $generatedSQL),
+            array(
+              "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE = InnoDB",
+              "CREATE TABLE Test (Date DATE DEFAULT CURRENT_DATE, Time TIME DEFAULT CURRENT_TIME, DateTime DATETIME DEFAULT CURRENT_TIMESTAMP, TimeStamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, DateTimeTZ DATETIME DEFAULT CURRENT_TIMESTAMP) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB",
+            )
         );
     }
 
@@ -182,17 +189,34 @@ EOT
 </schema>
 EOT
         ;
-        $platform = new \Doctrine\DBAL\Platforms\MySqlPlatform();
+        $platform = self::getMySQLPlatformInstance();
         $schema = Parser::fromDocument($xml, $platform);
         $generatedSQL = array_map('trim', $schema->toSql($platform));
-        $this->assertSame(
-            "CREATE TABLE Table1 ("
-              ."Field11 INT DEFAULT NULL, "
-              ."Field12 INT DEFAULT NULL COLLATE collateForAny, "
-              ."Field13 INT DEFAULT NULL COLLATE collateForMySQLOnly, "
-              ."Field14 INT DEFAULT NULL COLLATE collateForMySQLAmongOthers"
-            .") DEFAULT CHARACTER SET tableCharset COLLATE tableCollation ENGINE = MyISAM",
-            implode("\n", $generatedSQL)
+        $this->assertContains(
+            implode("\n", $generatedSQL),
+            array(
+              "CREATE TABLE Table1 (Field11 INT DEFAULT NULL, Field12 INT DEFAULT NULL COLLATE collateForAny, Field13 INT DEFAULT NULL COLLATE collateForMySQLOnly, Field14 INT DEFAULT NULL COLLATE collateForMySQLAmongOthers) DEFAULT CHARACTER SET tableCharset COLLATE tableCollation ENGINE = MyISAM",
+              "CREATE TABLE Table1 (Field11 INT DEFAULT NULL, Field12 INT DEFAULT NULL COLLATE `collateForAny`, Field13 INT DEFAULT NULL COLLATE `collateForMySQLOnly`, Field14 INT DEFAULT NULL COLLATE `collateForMySQLAmongOthers`) DEFAULT CHARACTER SET tableCharset COLLATE `tableCollation` ENGINE = MyISAM",
+            )
         );
+    }
+
+    /**
+     * @return string
+     */
+    private static function getMySQLPlatformClassName()
+    {
+        /* Since DBAL 3 the class name is MySQLPlatform, before it was MySqlPlatform */
+        return class_exists('Doctrine\DBAL\Platforms\MySQLPlatform') ? 'Doctrine\DBAL\Platforms\MySQLPlatform' : 'Doctrine\DBAL\Platforms\MySqlPlatform';
+    }
+
+    /**
+     * @return \Doctrine\DBAL\Platforms\MySQLPlatform|\Doctrine\DBAL\Platforms\MySqlPlatform
+     */
+    private static function getMySQLPlatformInstance()
+    {
+        $className = self::getMySQLPlatformClassName();
+
+        return new $className();
     }
 }

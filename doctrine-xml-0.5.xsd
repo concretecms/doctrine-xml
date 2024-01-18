@@ -74,25 +74,103 @@
 	<!-- Element type: /schema/table/field@type -->
 	<simpleType name="fieldTypeType">
 		<restriction base="string">
+			<!-- Numeric types - Integer types -->
 			<enumeration value="smallint" />
 			<enumeration value="integer" />
 			<enumeration value="bigint" />
+			<!-- Numeric types - Decimal types -->
 			<enumeration value="decimal" />
 			<enumeration value="float" />
+			<!-- String types - Character string types-->
 			<enumeration value="string" />
+			<enumeration value="ascii_string">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.11 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
 			<enumeration value="text" />
-			<enumeration value="guid" />
-			<enumeration value="binary" />
-			<enumeration value="blob" />
+			<enumeration value="guid">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)</documentation>
+				</annotation>
+			</enumeration>
+			<!-- String types - Binary string types-->
+			<enumeration value="binary">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="blob">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)</documentation>
+				</annotation>
+			</enumeration>
+			<!-- Bit types -->
 			<enumeration value="boolean" />
+			<!-- Date and time types -->
 			<enumeration value="date" />
+			<enumeration value="date_immutable">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
 			<enumeration value="datetime" />
-			<enumeration value="datetimetz" />
+			<enumeration value="datetime_immutable">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="datetimetz">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="datetimetz_immutable">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
 			<enumeration value="time" />
+			<enumeration value="time_immutable">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="dateinterval">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
 			<enumeration value="timestamp" />
-			<enumeration value="array" />
-			<enumeration value="json_array" />
-			<enumeration value="object" />
+			<!-- Array types -->
+			<enumeration value="array">
+				<annotation>
+					<documentation>Deprecated since Doctrine DBAL 3.4: use json instead</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="simple_array">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="json">
+				<annotation>
+					<documentation>Available since Doctrine DBAL 2.6 (since ConcreteCMS 9.0.0)</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="json_array">
+				<annotation>
+					<documentation>- Available since Doctrine DBAL 2.5 (since concrete5 5.7.4)
+- Deprecated since Doctrine DBAL 2.6: use json instead
+- Removed from Doctrine DBAL 3.3</documentation>
+				</annotation>
+			</enumeration>
+			<!-- Object types -->
+			<enumeration value="object">
+				<annotation>
+					<documentation>Deprecated since Doctrine DBAL 3.4: use json instead</documentation>
+				</annotation>
+			</enumeration>
 		</restriction>
 	</simpleType>
 

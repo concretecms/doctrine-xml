@@ -20,38 +20,6 @@ jobs:
         include:
           -
             os: ubuntu-latest
-            php-version: "5.3"
-            composer-version: "2.2"
-            composer-flags: --prefer-lowest
-            phpunit-version: "4"
-          -
-            os: ubuntu-latest
-            php-version: "5.4"
-            composer-version: "2.2"
-            phpunit-version: "4"
-          -
-            os: ubuntu-latest
-            php-version: "5.5"
-            composer-version: "2.2"
-            composer-flags: --prefer-lowest
-            phpunit-version: "4"
-          -
-            os: ubuntu-latest
-            php-version: "5.5"
-            composer-version: "2.2"
-            phpunit-version: "4"
-          -
-            os: ubuntu-latest
-            php-version: "5.6"
-            composer-version: "2.2"
-            phpunit-version: "5"
-          -
-            os: ubuntu-latest
-            php-version: "7.0"
-            composer-version: "2.2"
-            phpunit-version: "6"
-          -
-            os: ubuntu-latest
             php-version: "7.1"
             composer-version: "2.2"
             phpunit-version: "7"
@@ -109,6 +77,16 @@ jobs:
           -
             os: windows-latest
             php-version: "8.3"
+            composer-version: "2.2"
+            phpunit-version: "9"
+          -
+            os: windows-latest
+            php-version: "8.4"
+            composer-version: "2.2"
+            phpunit-version: "9"
+          -
+            os: windows-latest
+            php-version: "8.5"
             composer-version: "2.2"
             phpunit-version: "9"
     runs-on: ${{ matrix.os }}

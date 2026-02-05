@@ -28,7 +28,7 @@ class Parser
      *
      * @return Schema
      */
-    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, SchemaConfig $schemaConfig = null)
+    public static function fromFile($filename, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, ?SchemaConfig $schemaConfig = null)
     {
         if (!is_file($filename)) {
             throw new Exception('Unable to find the file '.$filename);
@@ -57,7 +57,7 @@ class Parser
      *
      * @return Schema
      */
-    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, SchemaConfig $schemaConfig = null)
+    public static function fromDocument($xml, AbstractPlatform $platform, $checkXml = true, $normalizeXml = false, $tableFilter = null, $platformVersion = null, ?SchemaConfig $schemaConfig = null)
     {
         if ($checkXml || $normalizeXml) {
             if (is_a($xml, '\SimpleXMLElement')) {

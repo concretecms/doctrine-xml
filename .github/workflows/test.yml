@@ -65,10 +65,15 @@ jobs:
             composer-version: "2"
             phpunit-version: "9"
           -
-            os: windows-latest
-            php-version: "5.5"
-            composer-version: "2.2"
-            phpunit-version: "4"
+            os: ubuntu-latest
+            php-version: "8.4"
+            composer-version: "2"
+            phpunit-version: "9"
+          -
+            os: ubuntu-latest
+            php-version: "8.5"
+            composer-version: "2"
+            phpunit-version: "9"
           -
             os: windows-latest
             php-version: "7.4"
